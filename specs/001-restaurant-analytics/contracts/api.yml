@@ -1,0 +1,559 @@
+openapi: 3.0.3
+info:
+  title: Restaurant Analytics API
+  description: REST API for restaurant analytics and visualization
+  version: 1.0.0
+  contact:
+    name: Restaurant Analytics Team
+servers:
+  - url: http://localhost:5000/api
+    description: Development server
+  - url: https://restaurant-analytics.example.com/api
+    description: Production server
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns API health status and basic metrics
+      operationId: getHealth
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Healthy response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                success: true
+                data:
+                  status: healthy
+                  uptime_seconds: 3600
+                  memory_usage_mb: 128
+                  data_loaded: true
+                metadata:
+                  timestamp: "2025-11-12T10:00:00Z"
+                  processing_time_ms: 5
+                  request_id: "123e4567-e89b-12d3-a456-426614174000"
+
+  /restaurant-types:
+    get:
+      summary: Get restaurant type summary
+      description: Returns aggregated statistics for all restaurant types
+      operationId: getRestaurantTypes
+      tags:
+        - Analytics
+      responses:
+        '200':
+          description: Restaurant type data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantTypesResponse'
+              example:
+                success: true
+                data:
+                  restaurant_types:
+                    - restaurant_type: "Quick Bites"
+                      count: 15000
+                      percentage: 29.0
+                      avg_rating: 3.8
+                      avg_cost_for_two: 400
+                    - restaurant_type: "Casual Dining"
+                      count: 12000
+                      percentage: 23.2
+                      avg_rating: 4.1
+                      avg_cost_for_two: 800
+                  total_types: 15
+                metadata:
+                  timestamp: "2025-11-12T10:00:00Z"
+                  processing_time_ms: 45
+                  request_id: "123e4567-e89b-12d3-a456-426614174000"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /top-restaurants:
+    get:
+      summary: Get top restaurants ranking
+      description: Returns top 10 restaurants in Bangalore ranked by votes and ratings
+      operationId: getTopRestaurants
+      tags:
+        - Analytics
+      parameters:
+        - name: limit
+          in: query
+          description: Number of restaurants to return (max 10)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 10
+        - name: sort_by
+          in: query
+          description: Sort criteria for ranking
+          required: false
+          schema:
+            type: string
+            enum: [votes, rating]
+            default: votes
+      responses:
+        '200':
+          description: Top restaurants data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopRestaurantsResponse'
+              example:
+                success: true
+                data:
+                  top_restaurants:
+                    - name: "Empire Restaurant"
+                      location: "BTM"
+                      rating: 4.2
+                      votes: 8500
+                      restaurant_type: "Casual Dining"
+                      cuisines: ["North Indian", "Chinese"]
+                      rank: 1
+                    - name: "Byg Brewski"
+                      location: "HSR"
+                      rating: 4.5
+                      votes: 7200
+                      restaurant_type: "Casual Dining"
+                      cuisines: ["Continental", "Asian"]
+                      rank: 2
+                  total_restaurants: 51717
+                metadata:
+                  timestamp: "2025-11-12T10:00:00Z"
+                  processing_time_ms: 32
+                  request_id: "123e4567-e89b-12d3-a456-426614174000"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /foodie-areas:
+    get:
+      summary: Get foodie areas analysis
+      description: Returns Bangalore areas ranked by restaurant concentration
+      operationId: getFoodieAreas
+      tags:
+        - Analytics
+      parameters:
+        - name: limit
+          in: query
+          description: Number of areas to return (max 20)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 10
+      responses:
+        '200':
+          description: Foodie areas data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodieAreasResponse'
+              example:
+                success: true
+                data:
+                  foodie_areas:
+                    - area: "BTM"
+                      restaurant_count: 5124
+                      avg_rating: 3.9
+                      top_cuisines: ["North Indian", "Chinese", "Biryani"]
+                      restaurant_types: ["Quick Bites", "Casual Dining"]
+                    - area: "HSR"
+                      restaurant_count: 3200
+                      avg_rating: 4.0
+                      top_cuisines: ["Continental", "Asian", "Italian"]
+                      restaurant_types: ["Casual Dining", "Cafe"]
+                  total_areas: 85
+                metadata:
+                  timestamp: "2025-11-12T10:00:00Z"
+                  processing_time_ms: 28
+                  request_id: "123e4567-e89b-12d3-a456-426614174000"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /charts/{chart_type}:
+    get:
+      summary: Generate chart image
+      description: Generates charts as base64 encoded images for frontend display
+      operationId: getChart
+      tags:
+        - Charts
+      parameters:
+        - name: chart_type
+          in: path
+          description: Type of chart to generate
+          required: true
+          schema:
+            type: string
+            enum: [restaurant-types-pie, top-restaurants-bar, foodie-areas-bar]
+        - name: width
+          in: query
+          description: Chart width in pixels
+          required: false
+          schema:
+            type: integer
+            minimum: 300
+            maximum: 1200
+            default: 800
+        - name: height
+          in: query
+          description: Chart height in pixels
+          required: false
+          schema:
+            type: integer
+            minimum: 200
+            maximum: 800
+            default: 400
+      responses:
+        '200':
+          description: Chart generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChartResponse'
+              example:
+                success: true
+                data:
+                  chart_type: "restaurant-types-pie"
+                  title: "Restaurant Types Distribution"
+                  base64_image: "iVBORw0KGgoAAAANSUhEUgAA..."
+                  width: 800
+                  height: 400
+                metadata:
+                  timestamp: "2025-11-12T10:00:00Z"
+                  processing_time_ms: 156
+                  request_id: "123e4567-e89b-12d3-a456-426614174000"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [healthy, unhealthy]
+              example: healthy
+            uptime_seconds:
+              type: integer
+              example: 3600
+            memory_usage_mb:
+              type: integer
+              example: 128
+            data_loaded:
+              type: boolean
+              example: true
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+
+    RestaurantTypesResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            restaurant_types:
+              type: array
+              items:
+                $ref: '#/components/schemas/RestaurantTypeSummary'
+            total_types:
+              type: integer
+              example: 15
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+
+    RestaurantTypeSummary:
+      type: object
+      required:
+        - restaurant_type
+        - count
+        - percentage
+      properties:
+        restaurant_type:
+          type: string
+          example: "Quick Bites"
+        count:
+          type: integer
+          minimum: 1
+          example: 15000
+        percentage:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 100
+          example: 29.0
+        avg_rating:
+          type: number
+          format: float
+          minimum: 1
+          maximum: 5
+          example: 3.8
+        avg_cost_for_two:
+          type: integer
+          minimum: 0
+          example: 400
+
+    TopRestaurantsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            top_restaurants:
+              type: array
+              items:
+                $ref: '#/components/schemas/TopRestaurant'
+            total_restaurants:
+              type: integer
+              example: 51717
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+
+    TopRestaurant:
+      type: object
+      required:
+        - name
+        - location
+        - votes
+        - restaurant_type
+        - cuisines
+        - rank
+      properties:
+        name:
+          type: string
+          example: "Empire Restaurant"
+        location:
+          type: string
+          example: "BTM"
+        rating:
+          type: number
+          format: float
+          minimum: 1
+          maximum: 5
+          example: 4.2
+        votes:
+          type: integer
+          minimum: 0
+          example: 8500
+        restaurant_type:
+          type: string
+          example: "Casual Dining"
+        cuisines:
+          type: array
+          items:
+            type: string
+          example: ["North Indian", "Chinese"]
+        rank:
+          type: integer
+          minimum: 1
+          maximum: 10
+          example: 1
+
+    FoodieAreasResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            foodie_areas:
+              type: array
+              items:
+                $ref: '#/components/schemas/FoodieArea'
+            total_areas:
+              type: integer
+              example: 85
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+
+    FoodieArea:
+      type: object
+      required:
+        - area
+        - restaurant_count
+      properties:
+        area:
+          type: string
+          example: "BTM"
+        restaurant_count:
+          type: integer
+          minimum: 1
+          example: 5124
+        avg_rating:
+          type: number
+          format: float
+          minimum: 1
+          maximum: 5
+          example: 3.9
+        top_cuisines:
+          type: array
+          items:
+            type: string
+          example: ["North Indian", "Chinese", "Biryani"]
+        restaurant_types:
+          type: array
+          items:
+            type: string
+          example: ["Quick Bites", "Casual Dining"]
+
+    ChartResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - chart_type
+            - title
+            - base64_image
+            - width
+            - height
+          properties:
+            chart_type:
+              type: string
+              example: "restaurant-types-pie"
+            title:
+              type: string
+              example: "Restaurant Types Distribution"
+            base64_image:
+              type: string
+              format: byte
+              description: Base64 encoded PNG image
+              example: "iVBORw0KGgoAAAANSUhEUgAA..."
+            width:
+              type: integer
+              minimum: 300
+              maximum: 1200
+              example: 800
+            height:
+              type: integer
+              minimum: 200
+              maximum: 800
+              example: 400
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+
+    ResponseMetadata:
+      type: object
+      required:
+        - timestamp
+        - processing_time_ms
+        - request_id
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-11-12T10:00:00Z"
+        processing_time_ms:
+          type: integer
+          minimum: 0
+          example: 45
+        request_id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Invalid parameter: limit must be between 1 and 10"
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Invalid parameter: limit must be between 1 and 10"
+            metadata:
+              timestamp: "2025-11-12T10:00:00Z"
+              processing_time_ms: 5
+              request_id: "123e4567-e89b-12d3-a456-426614174000"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Chart type 'invalid-chart' not found"
+            metadata:
+              timestamp: "2025-11-12T10:00:00Z"
+              processing_time_ms: 3
+              request_id: "123e4567-e89b-12d3-a456-426614174000"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error: "Internal server error occurred while processing request"
+            metadata:
+              timestamp: "2025-11-12T10:00:00Z"
+              processing_time_ms: 10
+              request_id: "123e4567-e89b-12d3-a456-426614174000"
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for authentication (if needed in future)
+
+security:
+  - ApiKeyAuth: []
+
+tags:
+  - name: Health
+    description: Health check and monitoring endpoints
+  - name: Analytics
+    description: Restaurant analytics and data endpoints
+  - name: Charts
+    description: Chart generation and visualization endpoints
