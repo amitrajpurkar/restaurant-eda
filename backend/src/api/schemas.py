@@ -37,6 +37,27 @@ class RestaurantTypesResponse(BaseModel):
     metadata: ResponseMetadata
 
 
+class TopRestaurantModel(BaseModel):
+    name: str
+    location: str
+    rating: Optional[float] = Field(default=None, ge=0, le=5)
+    votes: int = Field(ge=0)
+    restaurant_type: str
+    cuisines: List[str]
+    rank: int = Field(ge=1, le=10)
+
+
+class TopRestaurantsData(BaseModel):
+    top_restaurants: List[TopRestaurantModel]
+    total_restaurants: int = Field(ge=0)
+
+
+class TopRestaurantsResponse(BaseModel):
+    success: bool = True
+    data: TopRestaurantsData
+    metadata: ResponseMetadata
+
+
 class HealthData(BaseModel):
     status: str
     uptime_seconds: int = Field(ge=0)

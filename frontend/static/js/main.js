@@ -52,6 +52,61 @@ async function loadRestaurantTypes() {
   }
 }
 
+async function loadTopRestaurants() {
+  const loadingEl = document.getElementById('top-restaurants-loading');
+  const errorEl = document.getElementById('top-restaurants-error');
+  const gridEl = document.getElementById('top-restaurants-grid');
+
+  if (!loadingEl || !errorEl || !gridEl) return;
+
+  loadingEl.classList.remove('d-none');
+  errorEl.classList.add('d-none');
+  errorEl.textContent = '';
+  gridEl.innerHTML = '';
+
+  try {
+    const res = await fetch('/api/top-restaurants');
+    const body = await res.json();
+
+    if (!res.ok || !body.success) {
+      throw new Error(body && body.error ? body.error : `Request failed (${res.status})`);
+    }
+
+    const items = body.data.top_restaurants;
+    for (const item of items) {
+      const col = document.createElement('div');
+      col.className = 'col-12 col-lg-6';
+
+      const rating = item.rating == null ? 'N/A' : item.rating.toFixed(2);
+      const cuisines = Array.isArray(item.cuisines) ? item.cuisines.join(', ') : '';
+
+      col.innerHTML = `
+        <div class="card top-restaurant-card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <h3 class="h6 mb-1">#${item.rank} ${item.name}</h3>
+              <span class="badge text-bg-dark">${item.votes.toLocaleString()} votes</span>
+            </div>
+            <div class="meta mt-2">
+              <div>Location: <span class="fw-medium">${item.location}</span></div>
+              <div>Type: <span class="fw-medium">${item.restaurant_type}</span></div>
+              <div>Rating: <span class="fw-medium">${rating}</span></div>
+              <div>Cuisines: <span class="fw-medium">${cuisines}</span></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      gridEl.appendChild(col);
+    }
+  } catch (err) {
+    errorEl.textContent = err instanceof Error ? err.message : String(err);
+    errorEl.classList.remove('d-none');
+  } finally {
+    loadingEl.classList.add('d-none');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const refreshBtn = document.getElementById('refresh-btn');
   if (refreshBtn) {
@@ -60,5 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const topRefreshBtn = document.getElementById('top-restaurants-refresh-btn');
+  if (topRefreshBtn) {
+    topRefreshBtn.addEventListener('click', () => {
+      void loadTopRestaurants();
+    });
+  }
+
   void loadRestaurantTypes();
+  void loadTopRestaurants();
 });

@@ -66,6 +66,7 @@ def load_zomato_csv(data_file_path: str) -> LoadedData:
         "name",
         "location",
         "rest_type",
+        "cuisines",
         "rate",
         "votes",
         "approx_cost(for two people)",
@@ -85,6 +86,7 @@ def load_zomato_csv(data_file_path: str) -> LoadedData:
     df["location"] = df["location"].astype(str)
 
     df["restaurant_type"] = df["restaurant_type"].fillna("Unknown").astype(str)
+    df["cuisines"] = df["cuisines"].fillna("").astype(str)
     df["rating"] = df["rating"].apply(_parse_rating)
     df["approx_cost_for_two"] = df["approx_cost_for_two"].apply(_parse_cost)
 

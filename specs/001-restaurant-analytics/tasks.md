@@ -84,19 +84,19 @@ description: "Task list for restaurant analytics web application implementation"
 
 ### Tests
 
-- [ ] T034 Create backend/tests/unit/test_analytics_top_restaurants.py with ranking algorithm tests
-- [ ] T035 Create backend/tests/integration/test_api_top_restaurants.py with top restaurants endpoint tests
+- [X] T034 Create backend/tests/unit/test_analytics_top_restaurants.py with ranking algorithm tests
+- [X] T035 Create backend/tests/integration/test_api_top_restaurants.py with top restaurants endpoint tests
 
 ### Implementation
 
-- [ ] T036 [P] Create backend/src/models/analytics.py with TopRestaurant dataclass (add to existing file)
-- [ ] T037 Create backend/src/services/analytics.py with top restaurants ranking logic (add to existing file)
-- [ ] T038 Create backend/src/api/routes.py with /api/top-restaurants endpoint (add to existing file)
-- [ ] T039 Create backend/src/utils/charts.py with bar chart generation for top restaurants (add to existing file)
-- [ ] T040 Create frontend/templates/top_restaurants.html with ranked card layout
-- [ ] T041 Update frontend/static/css/main.css with ranking-specific styles
-- [ ] T042 Update frontend/static/js/main.js with restaurant card click handlers
-- [ ] T043 Update frontend/templates/index.html to include top restaurants section
+- [X] T036 [P] Create backend/src/models/analytics.py with TopRestaurant dataclass (add to existing file)
+- [X] T037 Create backend/src/services/analytics.py with top restaurants ranking logic (add to existing file)
+- [X] T038 Create backend/src/api/routes.py with /api/top-restaurants endpoint (add to existing file)
+- [X] T039 Create backend/src/utils/charts.py with bar chart generation for top restaurants (add to existing file)
+- [X] T040 Create frontend/templates/top_restaurants.html with ranked card layout
+- [X] T041 Update frontend/static/css/main.css with ranking-specific styles
+- [X] T042 Update frontend/static/js/main.js with restaurant card click handlers
+- [X] T043 Update frontend/templates/index.html to include top restaurants section
 
 ## Phase 5: User Story 3 - Foodie Areas Analysis (Priority: P2)
 
