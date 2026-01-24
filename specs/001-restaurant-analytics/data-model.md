@@ -93,7 +93,7 @@
 - `total_restaurants: int` - Total records processed
 - `last_updated: datetime` - When data was last processed
 - `processing_time_ms: int` - Time taken to process data
-- `data_source: str` - Source file (zomato.csv)
+- `data_source: str` - Source file (zomato.csv under repo-root data/)
 
 ## API Response Models
 

@@ -27,28 +27,28 @@ description: "Task list for restaurant analytics web application implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create project directory structure per implementation plan
+- [X] T001 Create project directory structure per implementation plan
 - [ ] T002 Create backend/requirements.txt with Flask, pandas, matplotlib, seaborn, pytest dependencies
-- [ ] T003 Create backend/pytest.ini with coverage configuration (80% minimum)
+- [X] T003 Create backend/pytest.ini with coverage configuration (80% minimum)
 - [ ] T004 Create backend/pyproject.toml with mypy strict mode and ruff configuration
-- [ ] T005 Create .gitignore for Python, Flask, and temporary files
-- [ ] T006 Create backend/data/ directory and copy zomato.csv sample data
-- [ ] T007 Create README.md with project overview and setup instructions
+- [X] T005 Create .gitignore for Python, Flask, and temporary files
+- [ ] T006 Create data/ directory (repo root) and copy zomato.csv sample data
+- [X] T007 Create README.md with project overview and setup instructions
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
 **Purpose**: Core infrastructure that all user stories depend on
 
-- [ ] T008 Create backend/src/__init__.py package initialization
-- [ ] T009 Create backend/src/app.py Flask application factory with basic configuration
-- [ ] T010 Create backend/src/models/__init__.py models package
-- [ ] T011 Create backend/src/services/__init__.py services package
-- [ ] T012 Create backend/src/api/__init__.py API package
-- [ ] T013 Create backend/src/utils/__init__.py utilities package
-- [ ] T014 Create backend/tests/__init__.py test package structure
-- [ ] T015 Create backend/tests/conftest.py with pytest fixtures and test client setup
-- [ ] T016 Create frontend/ directory structure (templates/, static/css/, static/js/)
-- [ ] T017 Create frontend/templates/base.html with Bootstrap 5 CDN and responsive meta tags
+- [X] T008 Create backend/src/__init__.py package initialization
+- [X] T009 Create backend/src/app.py Flask application factory with basic configuration
+- [X] T010 Create backend/src/models/__init__.py models package
+- [X] T011 Create backend/src/services/__init__.py services package
+- [X] T012 Create backend/src/api/__init__.py API package
+- [X] T013 Create backend/src/utils/__init__.py utilities package
+- [X] T014 Create backend/tests/__init__.py test package structure
+- [X] T015 Create backend/tests/conftest.py with pytest fixtures and test client setup
+- [X] T016 Create frontend/ directory structure (templates/, static/css/, static/js/)
+- [X] T017 Create frontend/templates/base.html with Bootstrap 5 CDN and responsive meta tags
 
 ## Phase 3: User Story 1 - Restaurant Type Summary Dashboard (Priority: P1)
 
@@ -59,23 +59,23 @@ description: "Task list for restaurant analytics web application implementation"
 
 - [ ] T018 Create backend/tests/unit/test_models.py with Restaurant model unit tests
 - [ ] T019 Create backend/tests/unit/test_data_loader.py with CSV loading and validation tests
-- [ ] T020 Create backend/tests/unit/test_analytics.py with restaurant type aggregation tests
-- [ ] T021 Create backend/tests/integration/test_api.py with restaurant types endpoint tests
+- [X] T020 Create backend/tests/unit/test_analytics.py with restaurant type aggregation tests
+- [X] T021 Create backend/tests/integration/test_api.py with restaurant types endpoint tests
 
 ### Implementation
 
-- [ ] T022 [P] Create backend/src/models/restaurant.py with Restaurant dataclass and validation
-- [ ] T023 [P] Create backend/src/models/analytics.py with RestaurantTypeSummary dataclass
-- [ ] T024 Create backend/src/services/data_loader.py with CSV loading and data cleaning logic
-- [ ] T025 Create backend/src/services/analytics.py with restaurant type aggregation business logic
-- [ ] T026 Create backend/src/api/schemas.py with Pydantic models for API responses
-- [ ] T027 Create backend/src/api/routes.py with /api/restaurant-types endpoint
+- [X] T022 [P] Create backend/src/models/restaurant.py with Restaurant dataclass and validation
+- [X] T023 [P] Create backend/src/models/analytics.py with RestaurantTypeSummary dataclass
+- [X] T024 Create backend/src/services/data_loader.py with CSV loading and data cleaning logic
+- [X] T025 Create backend/src/services/analytics.py with restaurant type aggregation business logic
+- [X] T026 Create backend/src/api/schemas.py with Pydantic models for API responses
+- [X] T027 Create backend/src/api/routes.py with /api/restaurant-types endpoint
 - [ ] T028 Create backend/src/utils/charts.py with pie chart generation for restaurant types
 - [ ] T029 Create frontend/templates/restaurant_types.html with Bootstrap card grid layout
-- [ ] T030 Create frontend/static/css/main.css with responsive card styling
-- [ ] T031 Create frontend/static/js/main.js with card hover interactions and AJAX calls
-- [ ] T032 Update backend/src/app.py to register API routes and serve frontend templates
-- [ ] T033 Create frontend/templates/index.html as main dashboard integrating restaurant types
+- [X] T030 Create frontend/static/css/main.css with responsive card styling
+- [X] T031 Create frontend/static/js/main.js with card hover interactions and AJAX calls
+- [X] T032 Update backend/src/app.py to register API routes and serve frontend templates
+- [X] T033 Create frontend/templates/index.html as main dashboard integrating restaurant types
 
 ## Phase 4: User Story 2 - Top Restaurants Ranking (Priority: P1)
 

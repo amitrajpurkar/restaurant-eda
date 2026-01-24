@@ -15,7 +15,7 @@
 
 ### Required Files
 
-- `zomato.csv` - Restaurant dataset (placed in `backend/data/` directory)
+- `zomato.csv` - Restaurant dataset (placed in the repository root `data/` directory)
 
 ## Installation Steps
 
@@ -55,15 +55,8 @@ python -c "import flask, pandas, matplotlib, seaborn; print('Dependencies instal
 ### 3. Prepare Data
 
 ```bash
-# Create data directory if it doesn't exist
-mkdir -p data
-
-# Copy zomato.csv to data directory
-# (Assuming you have the file in the project root)
-cp ../data/zomato.csv data/zomato.csv
-
-# Verify data file exists
-ls -la data/zomato.csv
+# Verify data file exists (repo root)
+ls -la ../data/zomato.csv
 ```
 
 ### 4. Run the Application
@@ -167,16 +160,14 @@ pip install -r backend/requirements.txt
 
 **Issue**: "FileNotFoundError: zomato.csv"
 ```bash
-# Solution: Ensure data file is in correct location
-ls backend/data/zomato.csv
-# If missing, copy from project data directory
-cp data/zomato.csv backend/data/
+# Solution: Ensure data file is in correct location (repo root)
+ls data/zomato.csv
 ```
 
 **Issue**: "Memory error when loading data"
 ```bash
 # Solution: Check available memory and data file size
-python -c "import pandas as pd; df = pd.read_csv('backend/data/zomato.csv'); print(f'Shape: {df.shape}, Memory: {df.memory_usage(deep=True).sum() / 1024**2:.1f} MB')"
+python -c "import pandas as pd; df = pd.read_csv('data/zomato.csv'); print(f'Shape: {df.shape}, Memory: {df.memory_usage(deep=True).sum() / 1024**2:.1f} MB')"
 ```
 
 **Issue**: "Port 5000 already in use"
@@ -207,7 +198,7 @@ lsof -ti:5000 | xargs kill
 # Validate CSV structure
 python -c "
 import pandas as pd
-df = pd.read_csv('backend/data/zomato.csv')
+df = pd.read_csv('data/zomato.csv')
 print(f'Columns: {list(df.columns)}')
 print(f'Shape: {df.shape}')
 print(f'Missing values: {df.isnull().sum().sum()}')

@@ -107,9 +107,10 @@ backend/
 │   │   └── test_api.py
 │   └── contract/
 │       └── test_api_contracts.py
-├── data/
-│   └── zomato.csv             # Restaurant data source
 └── requirements.txt           # Python dependencies
+
+data/
+└── zomato.csv             # Restaurant data source
 
 frontend/
 ├── static/

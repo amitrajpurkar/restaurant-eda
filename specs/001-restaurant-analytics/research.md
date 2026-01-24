@@ -86,7 +86,7 @@
 
 ### Data Loading Strategy
 
-**Decision**: Load CSV once at application startup, cache in memory
+**Decision**: Load CSV once at application startup from the repository root `data/` directory, cache in memory
 
 **Rationale**:
 - zomato.csv is static data for analytics

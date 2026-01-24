@@ -3,7 +3,7 @@
 **Feature Branch**: `001-restaurant-analytics`  
 **Created**: 2025-11-12  
 **Status**: Draft  
-**Input**: User description: "build a python application that has backend service classes to read restaurant data from a CSV file and exposes them as API. This application will have a frontend user interface that invokes the API and shows data and or graphs on the web pages. The application is reading data from zomato.csv and showing cards on the webpage showing summary of restaurant types, top ten restaurants in Bangaluru, which are the foodie areas"
+**Input**: User description: "build a python application that has backend service classes to read restaurant data from a CSV file and exposes them as API. This application will have a frontend user interface that invokes the API and shows data and or graphs on the web pages. The application is reading data from zomato.csv (located under the repository root data/ directory) and showing cards on the webpage showing summary of restaurant types, top ten restaurants in Bangaluru, which are the foodie areas"
 
 ## User Scenarios & Testing *(mandatory)*
 
