@@ -28,11 +28,11 @@ description: "Task list for restaurant analytics web application implementation"
 **Purpose**: Project initialization and basic structure
 
 - [X] T001 Create project directory structure per implementation plan
-- [ ] T002 Create backend/requirements.txt with Flask, pandas, matplotlib, seaborn, pytest dependencies
+- [X] T002 Create backend/requirements.txt with Flask, pandas, matplotlib, seaborn, pytest dependencies
 - [X] T003 Create backend/pytest.ini with coverage configuration (80% minimum)
-- [ ] T004 Create backend/pyproject.toml with mypy strict mode and ruff configuration
+- [X] T004 Create backend/pyproject.toml with mypy strict mode and ruff configuration
 - [X] T005 Create .gitignore for Python, Flask, and temporary files
-- [ ] T006 Create data/ directory (repo root) and copy zomato.csv sample data
+- [X] T006 Create data/ directory (repo root) and copy zomato.csv sample data
 - [X] T007 Create README.md with project overview and setup instructions
 
 ## Phase 2: Foundational (Blocking Prerequisites)
@@ -57,8 +57,8 @@ description: "Task list for restaurant analytics web application implementation"
 
 ### Tests (TDD Approach)
 
-- [ ] T018 Create backend/tests/unit/test_models.py with Restaurant model unit tests
-- [ ] T019 Create backend/tests/unit/test_data_loader.py with CSV loading and validation tests
+- [X] T018 Create backend/tests/unit/test_models.py with Restaurant model unit tests
+- [X] T019 Create backend/tests/unit/test_data_loader.py with CSV loading and validation tests
 - [X] T020 Create backend/tests/unit/test_analytics.py with restaurant type aggregation tests
 - [X] T021 Create backend/tests/integration/test_api.py with restaurant types endpoint tests
 
@@ -70,8 +70,8 @@ description: "Task list for restaurant analytics web application implementation"
 - [X] T025 Create backend/src/services/analytics.py with restaurant type aggregation business logic
 - [X] T026 Create backend/src/api/schemas.py with Pydantic models for API responses
 - [X] T027 Create backend/src/api/routes.py with /api/restaurant-types endpoint
-- [ ] T028 Create backend/src/utils/charts.py with pie chart generation for restaurant types
-- [ ] T029 Create frontend/templates/restaurant_types.html with Bootstrap card grid layout
+- [X] T028 Create backend/src/utils/charts.py with pie chart generation for restaurant types
+- [X] T029 Create frontend/templates/restaurant_types.html with Bootstrap card grid layout
 - [X] T030 Create frontend/static/css/main.css with responsive card styling
 - [X] T031 Create frontend/static/js/main.js with card hover interactions and AJAX calls
 - [X] T032 Update backend/src/app.py to register API routes and serve frontend templates
