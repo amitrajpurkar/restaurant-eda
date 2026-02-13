@@ -1,0 +1,199 @@
+openapi: 3.0.3
+info:
+  title: Belangaru Restaurant Dashboard — Search & Drill-Down API
+  version: "2.0"
+  description: >
+    New and modified endpoints for feature 002-dashboard-tiles-search.
+    Existing endpoints (/api/health, /api/restaurant-types, /api/top-restaurants,
+    /api/foodie-areas, /api/charts/{chart_type}) remain unchanged.
+
+servers:
+  - url: http://127.0.0.1:5000
+    description: Local development
+
+paths:
+  /api/search:
+    get:
+      operationId: search
+      summary: Search restaurants, types, or areas
+      description: >
+        Case-insensitive substring search. Results capped at 10.
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+          description: Search query text
+        - name: mode
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [name, type, area]
+          description: "Search mode: name=restaurant name, type=restaurant type, area=foodie area"
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+        "400":
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /:
+    get:
+      operationId: homePage
+      summary: Belangaru Restaurant Dashboard home page
+      description: >
+        Serves the tile-based dashboard with search panel. Replaces old sequential layout.
+      responses:
+        "200":
+          description: HTML page
+
+  /top-restaurants:
+    get:
+      operationId: drilldownRestaurants
+      summary: Drill-down page for top 10 restaurants
+      description: >
+        HTML page showing top-10 restaurants chart + tiles.
+        Loads data via /api/top-restaurants and /api/charts/top-restaurants-bar.
+      responses:
+        "200":
+          description: HTML page
+
+  /top-foodie-areas:
+    get:
+      operationId: drilldownFoodieAreas
+      summary: Drill-down page for top 10 foodie areas
+      description: >
+        HTML page showing top-10 foodie areas chart + tiles.
+        Loads data via /api/foodie-areas and /api/charts/foodie-areas-bar.
+      responses:
+        "200":
+          description: HTML page
+
+  /top-restaurant-types:
+    get:
+      operationId: drilldownRestaurantTypes
+      summary: Drill-down page for top 10 restaurant types
+      description: >
+        HTML page showing top-10 restaurant types chart + tiles.
+        Loads data via /api/restaurant-types and /api/charts/restaurant-types-pie.
+      responses:
+        "200":
+          description: HTML page
+
+components:
+  schemas:
+    ResponseMetadata:
+      type: object
+      required: [request_id, processing_time_ms, timestamp]
+      properties:
+        request_id:
+          type: string
+          format: uuid
+        processing_time_ms:
+          type: integer
+          minimum: 0
+        timestamp:
+          type: string
+          format: date-time
+
+    SearchResultName:
+      type: object
+      required: [name, location, restaurant_type, votes]
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+        restaurant_type:
+          type: string
+        rating:
+          type: number
+          nullable: true
+        votes:
+          type: integer
+
+    SearchResultType:
+      type: object
+      required: [restaurant_type, count]
+      properties:
+        restaurant_type:
+          type: string
+        count:
+          type: integer
+        avg_rating:
+          type: number
+          nullable: true
+
+    SearchResultArea:
+      type: object
+      required: [area, restaurant_count]
+      properties:
+        area:
+          type: string
+        restaurant_count:
+          type: integer
+        avg_rating:
+          type: number
+          nullable: true
+
+    SearchData:
+      type: object
+      required: [query, mode, results, total_matches]
+      properties:
+        query:
+          type: string
+        mode:
+          type: string
+          enum: [name, type, area]
+        results:
+          type: array
+          maxItems: 10
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/SearchResultName"
+              - $ref: "#/components/schemas/SearchResultType"
+              - $ref: "#/components/schemas/SearchResultArea"
+        total_matches:
+          type: integer
+          minimum: 0
+
+    SearchResponse:
+      type: object
+      required: [success, data, metadata]
+      properties:
+        success:
+          type: boolean
+          enum: [true]
+        data:
+          $ref: "#/components/schemas/SearchData"
+        metadata:
+          $ref: "#/components/schemas/ResponseMetadata"
+
+    ErrorResponse:
+      type: object
+      required: [success, error, metadata]
+      properties:
+        success:
+          type: boolean
+          enum: [false]
+        error:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/ResponseMetadata"
