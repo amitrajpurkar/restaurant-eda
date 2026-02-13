@@ -22,3 +22,12 @@ class TopRestaurant:
     restaurant_type: str
     cuisines: List[str]
     rank: int
+
+
+@dataclass(frozen=True, slots=True)
+class FoodieArea:
+    area: str
+    restaurant_count: int
+    avg_rating: Optional[float]
+    top_cuisines: List[str]
+    restaurant_types: List[str]

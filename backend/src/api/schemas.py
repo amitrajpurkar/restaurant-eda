@@ -58,6 +58,39 @@ class TopRestaurantsResponse(BaseModel):
     metadata: ResponseMetadata
 
 
+class FoodieAreaModel(BaseModel):
+    area: str
+    restaurant_count: int = Field(ge=0)
+    avg_rating: Optional[float] = Field(default=None, ge=0, le=5)
+    top_cuisines: List[str]
+    restaurant_types: List[str]
+
+
+class FoodieAreasData(BaseModel):
+    foodie_areas: List[FoodieAreaModel]
+    total_areas: int = Field(ge=0)
+
+
+class FoodieAreasResponse(BaseModel):
+    success: bool = True
+    data: FoodieAreasData
+    metadata: ResponseMetadata
+
+
+class ChartData(BaseModel):
+    chart_type: str
+    title: str
+    base64_image: str
+    width: int = Field(ge=300, le=1200)
+    height: int = Field(ge=200, le=800)
+
+
+class ChartResponse(BaseModel):
+    success: bool = True
+    data: ChartData
+    metadata: ResponseMetadata
+
+
 class HealthData(BaseModel):
     status: str
     uptime_seconds: int = Field(ge=0)

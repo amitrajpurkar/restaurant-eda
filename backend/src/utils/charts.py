@@ -5,8 +5,7 @@ import io
 from dataclasses import dataclass
 from typing import List
 
-from src.models.analytics import RestaurantTypeSummary
-from src.models.analytics import TopRestaurant
+from src.models.analytics import FoodieArea, RestaurantTypeSummary, TopRestaurant
 
 
 @dataclass(frozen=True, slots=True)
@@ -44,6 +43,46 @@ def restaurant_types_pie_chart(
         sizes = [r.count for r in restaurant_types]
         ax.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=90)
         ax.axis("equal")
+
+    buf = io.BytesIO()
+    fig.tight_layout()
+    fig.savefig(buf, format="png")
+    plt.close(fig)
+
+    b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+    return ChartImage(title=title, base64_image=b64)
+
+
+def foodie_areas_bar_chart(
+    foodie_areas: List[FoodieArea], *, width: int = 800, height: int = 400
+) -> ChartImage:
+    try:
+        import matplotlib
+
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except Exception as exc:  # pragma: no cover
+        raise RuntimeError(
+            "Chart generation requires matplotlib. Install it in your environment to use charts."
+        ) from exc
+
+    fig_w = max(3.0, width / 100.0)
+    fig_h = max(2.0, height / 100.0)
+
+    fig, ax = plt.subplots(figsize=(fig_w, fig_h), dpi=100)
+
+    title = "Foodie Areas"
+    ax.set_title(title)
+
+    if not foodie_areas:
+        ax.text(0.5, 0.5, "No data", ha="center", va="center")
+        ax.set_axis_off()
+    else:
+        areas = [f"{a.area}" for a in foodie_areas]
+        counts = [a.restaurant_count for a in foodie_areas]
+
+        ax.barh(areas[::-1], counts[::-1])
+        ax.set_xlabel("Restaurants")
 
     buf = io.BytesIO()
     fig.tight_layout()
