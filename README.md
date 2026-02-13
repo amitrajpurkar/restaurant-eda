@@ -25,6 +25,7 @@ ls -la data/zomato.csv
 
 ```bash
 uv run python backend/src/app.py
+FLASK_RUN_PORT=5001 uv run python backend/src/app.py
 ```
 
 Then open:
