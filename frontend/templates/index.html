@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h3 mb-0">Dashboard</h1>
+  </div>
+
+  {% include 'restaurant_types.html' %}
+
+  {% include 'top_restaurants.html' %}
+
+  {% include 'foodie_areas.html' %}
+
+  {% include 'charts.html' %}
+{% endblock %}

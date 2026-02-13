@@ -78,6 +78,10 @@ target/
 # Jupyter Notebook
 .ipynb_checkpoints
 
+# Large datasets
+data/zomato.csv
+backend/data/zomato.csv
+
 # IPython
 profile_default/
 ipython_config.py
