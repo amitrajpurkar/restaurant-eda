@@ -96,8 +96,8 @@ As a user, I want a clear way to return from any drill-down page back to the hom
   - Top 10 Foodie Areas
   - Top 10 Restaurant Types
 - **FR-005**: Clicking each category tile MUST navigate to the corresponding drill-down page.
-- **FR-006**: Each drill-down page MUST display a top-10 chart for its category, above the list of items.
-- **FR-007**: Each drill-down page MUST display exactly 10 item tiles for its category (or fewer if there are fewer than 10 items), ordered from rank 1 to rank 10.
+- **FR-006**: Each drill-down page MUST display a top-10 chart for its category, above the list of items. The chart MUST only include the top 10 entries (by count/rank), not all entries from the dataset.
+- **FR-007**: Each drill-down page MUST display exactly 10 item tiles for its category (or fewer if there are fewer than 10 items), ordered from rank 1 to rank 10. This applies uniformly to restaurants, foodie areas, and restaurant types.
 - **FR-008**: Each drill-down page MUST provide a navigation control labeled "Belangaru Restaurant Dashboard" that returns the user to the home page.
 - **FR-009**: The system MUST show a clear empty state when a search returns no matches.
 - **FR-010**: The system MUST validate and safely handle user-provided search inputs such that the UI remains stable and responsive.
@@ -126,6 +126,7 @@ As a user, I want a clear way to return from any drill-down page back to the hom
 - Q: What type of text matching should search use? → A: Case-insensitive substring (contains) matching.
 - Q: Should the new tile-based dashboard completely replace the current sequential sections on the home page? → A: Full replacement — the new tile + search layout replaces all existing sequential sections.
 - Q: What is the maximum number of search results to display? → A: 10 results maximum.
+- Q: Should the "Top 10 Restaurant Types" drill-down show all types from the dataset or only the top 10? → A: Only the top 10 (by restaurant count). Both the chart and the tiles must be limited to the top 10, consistent with the other two drill-down pages.
 
 ## Success Criteria *(mandatory)*
 

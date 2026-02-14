@@ -16,7 +16,7 @@ Replace the existing sequential home page (restaurant types, top restaurants, fo
 **Target Platform**: macOS / Linux dev server (Flask development server)  
 **Project Type**: Web application (backend + frontend)  
 **Performance Goals**: API <200ms p95 for simple queries; frontend TTI <3s  
-**Constraints**: <200ms p95 API latency; search results capped at 10; in-memory dataset  
+**Constraints**: <200ms p95 API latency; search results capped at 10; all drill-down pages (including restaurant types) limited to top 10 items in both chart and tiles; in-memory dataset  
 **Scale/Scope**: Single-user dev tool; ~50k restaurant rows; 4 pages (home + 3 drill-down)
 
 ## Constitution Check

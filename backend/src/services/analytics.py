@@ -48,7 +48,7 @@ class FoodieAreasResult:
     processing_time_ms: int
 
 
-def compute_restaurant_type_summary(restaurants_df: pd.DataFrame) -> RestaurantTypeAnalyticsResult:
+def compute_restaurant_type_summary(restaurants_df: pd.DataFrame, *, limit: int = 10) -> RestaurantTypeAnalyticsResult:
     start = perf_counter()
 
     if restaurants_df.empty:
@@ -71,6 +71,7 @@ def compute_restaurant_type_summary(restaurants_df: pd.DataFrame) -> RestaurantT
     merged["percentage"] = (merged["count"] / total) * 100.0
 
     merged = merged.sort_values(by=["count", "restaurant_type"], ascending=[False, True])
+    merged = merged.head(limit)
 
     items: List[RestaurantTypeSummary] = []
     for row in merged.itertuples(index=False):
@@ -99,13 +100,13 @@ def compute_restaurant_type_summary(restaurants_df: pd.DataFrame) -> RestaurantT
 
 
 def get_restaurant_type_summary_cached(
-    restaurants_df: pd.DataFrame, *, ttl: int = 300
+    restaurants_df: pd.DataFrame, *, limit: int = 10, ttl: int = 300
 ) -> RestaurantTypeAnalyticsResult:
-    key = f"restaurant-types:{id(restaurants_df)}:{len(restaurants_df)}"
+    key = f"restaurant-types:{id(restaurants_df)}:{len(restaurants_df)}:{limit}"
     cached = _cache_get(key)
     if cached is not None:
         return cached
-    result = compute_restaurant_type_summary(restaurants_df)
+    result = compute_restaurant_type_summary(restaurants_df, limit=limit)
     _cache_set(key, result, ttl=ttl)
     return result
 

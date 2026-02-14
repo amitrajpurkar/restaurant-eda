@@ -126,6 +126,20 @@
 
 ---
 
+## Phase 7: Bug Fix — Restaurant Types Drill-Down Showing All Items
+
+**Purpose**: Fix restaurant types drill-down page displaying all types from dataset instead of only top 10
+
+- [X] T031 Add `limit` parameter (default=10) to `compute_restaurant_type_summary()` in backend/src/services/analytics.py — apply `.head(limit)` after sorting by count descending, consistent with `compute_top_restaurants` and `compute_foodie_areas`
+- [X] T032 [P] Update `get_restaurant_type_summary_cached()` wrapper to pass `limit` through to `compute_restaurant_type_summary` and include limit in cache key
+- [X] T033 [P] Update spec.md FR-006/FR-007 to clarify top-10 constraint applies uniformly to all three drill-down pages including restaurant types; add clarification entry
+- [X] T034 [P] Update plan.md constraints to document the top-10 limit for all drill-down pages
+- [X] T035 Run full test suite to verify no regressions (81 passed, 86% coverage)
+
+**Checkpoint**: Restaurant types drill-down chart and tiles now show only top 10 items by count, consistent with the other two drill-down pages
+
+---
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies
