@@ -1,254 +1,284 @@
-async function loadRestaurantTypes() {
-  const loadingEl = document.getElementById('restaurant-types-loading');
-  const errorEl = document.getElementById('restaurant-types-error');
-  const gridEl = document.getElementById('restaurant-types-grid');
+/* ===== Home Page: Search ===== */
 
-  if (!loadingEl || !errorEl || !gridEl) return;
+async function handleSearch() {
+  const queryEl = document.getElementById('search-query');
+  const modeEl = document.getElementById('search-mode');
+  const resultsContainer = document.getElementById('search-results');
+  const resultsGrid = document.getElementById('search-results-grid');
+  const noResults = document.getElementById('search-no-results');
+  const errorEl = document.getElementById('search-error');
 
-  loadingEl.classList.remove('d-none');
-  errorEl.classList.add('d-none');
-  errorEl.textContent = '';
-  gridEl.innerHTML = '';
+  if (!queryEl || !modeEl || !resultsContainer) return;
+
+  const q = queryEl.value.trim();
+  if (!q) {
+    clearSearch();
+    return;
+  }
+
+  resultsContainer.style.display = 'block';
+  resultsGrid.innerHTML = '';
+  noResults.style.display = 'none';
+  errorEl.style.display = 'none';
 
   try {
-    const res = await fetch('/api/restaurant-types');
+    const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&mode=${modeEl.value}`);
     const body = await res.json();
 
     if (!res.ok || !body.success) {
       throw new Error(body && body.error ? body.error : `Request failed (${res.status})`);
     }
 
-    const items = body.data.restaurant_types;
+    const items = body.data.results;
+    const mode = body.data.mode;
+
+    if (items.length === 0) {
+      noResults.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('search-results-title').textContent =
+      `Search Results (${body.data.total_matches} match${body.data.total_matches !== 1 ? 'es' : ''})`;
+
     for (const item of items) {
       const col = document.createElement('div');
-      col.className = 'col-12 col-sm-6 col-lg-4 col-xl-3';
-
-      const avgRating = item.avg_rating == null ? 'N/A' : item.avg_rating.toFixed(2);
-      const avgCost = item.avg_cost_for_two == null ? 'N/A' : item.avg_cost_for_two;
-
-      col.innerHTML = `
-        <div class="card type-card h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-              <h3 class="h6 mb-1">${item.restaurant_type}</h3>
-              <span class="badge text-bg-primary">${item.percentage.toFixed(1)}%</span>
-            </div>
-            <div class="display-6 fw-semibold">${item.count.toLocaleString()}</div>
-            <div class="meta mt-2">
-              <div>Avg rating: <span class="fw-medium">${avgRating}</span></div>
-              <div>Avg cost for two: <span class="fw-medium">${avgCost}</span></div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      gridEl.appendChild(col);
+      col.className = 'col-12 col-sm-6 col-lg-4';
+      col.innerHTML = renderSearchResult(item, mode);
+      resultsGrid.appendChild(col);
     }
   } catch (err) {
     errorEl.textContent = err instanceof Error ? err.message : String(err);
-    errorEl.classList.remove('d-none');
-  } finally {
-    loadingEl.classList.add('d-none');
+    errorEl.style.display = 'block';
   }
 }
 
-async function loadFoodieAreas() {
-  const loadingEl = document.getElementById('foodie-areas-loading');
-  const errorEl = document.getElementById('foodie-areas-error');
-  const gridEl = document.getElementById('foodie-areas-grid');
+function renderSearchResult(item, mode) {
+  if (mode === 'name') {
+    const rating = item.rating == null ? 'N/A' : item.rating.toFixed(2);
+    return `
+      <div class="card search-result-card h-100">
+        <div class="card-body">
+          <h6 class="card-title">${item.name}</h6>
+          <div class="text-muted small">
+            <div>${item.location} &middot; ${item.restaurant_type}</div>
+            <div>Rating: ${rating} &middot; ${item.votes.toLocaleString()} votes</div>
+          </div>
+        </div>
+      </div>`;
+  } else if (mode === 'type') {
+    const avg = item.avg_rating == null ? 'N/A' : item.avg_rating.toFixed(2);
+    return `
+      <div class="card search-result-card h-100">
+        <div class="card-body">
+          <h6 class="card-title">${item.restaurant_type}</h6>
+          <div class="text-muted small">
+            <div>${item.count} restaurants</div>
+            <div>Avg rating: ${avg}</div>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    const avg = item.avg_rating == null ? 'N/A' : item.avg_rating.toFixed(2);
+    return `
+      <div class="card search-result-card h-100">
+        <div class="card-body">
+          <h6 class="card-title">${item.area}</h6>
+          <div class="text-muted small">
+            <div>${item.restaurant_count} restaurants</div>
+            <div>Avg rating: ${avg}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+}
 
-  if (!loadingEl || !errorEl || !gridEl) return;
+function clearSearch() {
+  const queryEl = document.getElementById('search-query');
+  const resultsContainer = document.getElementById('search-results');
+  if (queryEl) queryEl.value = '';
+  if (resultsContainer) resultsContainer.style.display = 'none';
+}
 
-  loadingEl.classList.remove('d-none');
-  errorEl.classList.add('d-none');
-  errorEl.textContent = '';
-  gridEl.innerHTML = '';
+/* ===== Drill-down Pages ===== */
+
+async function loadDrilldownChart(chartType) {
+  const container = document.getElementById('chart-container');
+  const errorEl = document.getElementById('chart-error');
+  const loadingEl = document.getElementById('chart-loading');
+
+  if (!container) return;
+  if (loadingEl) loadingEl.style.display = 'block';
+  if (errorEl) errorEl.style.display = 'none';
 
   try {
-    const res = await fetch('/api/foodie-areas');
+    const res = await fetch(`/api/charts/${chartType}?width=900&height=420`);
     const body = await res.json();
 
     if (!res.ok || !body.success) {
       throw new Error(body && body.error ? body.error : `Request failed (${res.status})`);
     }
 
-    const items = body.data.foodie_areas;
-    for (const item of items) {
-      const col = document.createElement('div');
-      col.className = 'col-12 col-lg-6';
-
-      const rating = item.avg_rating == null ? 'N/A' : item.avg_rating.toFixed(2);
-      const cuisines = Array.isArray(item.top_cuisines) ? item.top_cuisines.join(', ') : '';
-      const types = Array.isArray(item.restaurant_types) ? item.restaurant_types.join(', ') : '';
-
-      col.innerHTML = `
-        <div class="card foodie-area-card h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-              <h3 class="h6 mb-1">${item.area}</h3>
-              <span class="badge text-bg-secondary">${item.restaurant_count.toLocaleString()} restaurants</span>
-            </div>
-            <div class="meta mt-2">
-              <div>Avg rating: <span class="fw-medium">${rating}</span></div>
-              <div>Top cuisines: <span class="fw-medium">${cuisines}</span></div>
-              <div>Top types: <span class="fw-medium">${types}</span></div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      gridEl.appendChild(col);
+    const imgEl = document.getElementById('chart-image');
+    if (imgEl) {
+      imgEl.src = `data:image/png;base64,${body.data.base64_image}`;
+      imgEl.alt = body.data.title || chartType;
+      imgEl.style.display = 'block';
     }
   } catch (err) {
-    errorEl.textContent = err instanceof Error ? err.message : String(err);
-    errorEl.classList.remove('d-none');
+    if (errorEl) {
+      errorEl.textContent = `Chart failed to load: ${err instanceof Error ? err.message : String(err)}`;
+      errorEl.style.display = 'block';
+    }
   } finally {
-    loadingEl.classList.add('d-none');
+    if (loadingEl) loadingEl.style.display = 'none';
   }
 }
 
-async function loadTopRestaurants() {
-  const loadingEl = document.getElementById('top-restaurants-loading');
-  const errorEl = document.getElementById('top-restaurants-error');
-  const gridEl = document.getElementById('top-restaurants-grid');
+async function loadDrilldownItems(apiEndpoint, renderFn) {
+  const grid = document.getElementById('items-grid');
+  const errorEl = document.getElementById('items-error');
+  const loadingEl = document.getElementById('items-loading');
 
-  if (!loadingEl || !errorEl || !gridEl) return;
-
-  loadingEl.classList.remove('d-none');
-  errorEl.classList.add('d-none');
-  errorEl.textContent = '';
-  gridEl.innerHTML = '';
+  if (!grid) return;
+  if (loadingEl) loadingEl.style.display = 'block';
+  if (errorEl) errorEl.style.display = 'none';
+  grid.innerHTML = '';
 
   try {
-    const res = await fetch('/api/top-restaurants');
+    const res = await fetch(apiEndpoint);
     const body = await res.json();
 
     if (!res.ok || !body.success) {
       throw new Error(body && body.error ? body.error : `Request failed (${res.status})`);
     }
 
-    const items = body.data.top_restaurants;
-    for (const item of items) {
-      const col = document.createElement('div');
-      col.className = 'col-12 col-lg-6';
-
-      const rating = item.rating == null ? 'N/A' : item.rating.toFixed(2);
-      const cuisines = Array.isArray(item.cuisines) ? item.cuisines.join(', ') : '';
-
-      col.innerHTML = `
-        <div class="card top-restaurant-card h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-              <h3 class="h6 mb-1">#${item.rank} ${item.name}</h3>
-              <span class="badge text-bg-dark">${item.votes.toLocaleString()} votes</span>
-            </div>
-            <div class="meta mt-2">
-              <div>Location: <span class="fw-medium">${item.location}</span></div>
-              <div>Type: <span class="fw-medium">${item.restaurant_type}</span></div>
-              <div>Rating: <span class="fw-medium">${rating}</span></div>
-              <div>Cuisines: <span class="fw-medium">${cuisines}</span></div>
-            </div>
-          </div>
-        </div>
-      `;
-
-      gridEl.appendChild(col);
-    }
+    renderFn(body.data, grid);
   } catch (err) {
-    errorEl.textContent = err instanceof Error ? err.message : String(err);
-    errorEl.classList.remove('d-none');
+    if (errorEl) {
+      errorEl.textContent = err instanceof Error ? err.message : String(err);
+      errorEl.style.display = 'block';
+    }
   } finally {
-    loadingEl.classList.add('d-none');
+    if (loadingEl) loadingEl.style.display = 'none';
   }
 }
 
-async function loadCharts() {
-  const loadingEl = document.getElementById('charts-loading');
-  const errorEl = document.getElementById('charts-error');
-  const gridEl = document.getElementById('charts-grid');
-
-  if (!loadingEl || !errorEl || !gridEl) return;
-
-  loadingEl.classList.remove('d-none');
-  errorEl.classList.add('d-none');
-  errorEl.textContent = '';
-  gridEl.innerHTML = '';
-
-  const chartTypes = [
-    { type: 'restaurant-types-pie' },
-    { type: 'top-restaurants-bar' },
-    { type: 'foodie-areas-bar' },
-  ];
-
-  try {
-    for (const chart of chartTypes) {
-      const res = await fetch(`/api/charts/${chart.type}?width=900&height=420`);
-      const body = await res.json();
-
-      if (!res.ok || !body.success) {
-        throw new Error(body && body.error ? body.error : `Request failed (${res.status})`);
-      }
-
-      const item = body.data;
-      const col = document.createElement('div');
-      col.className = 'col-12 col-xl-6';
-
-      const title = item.title || item.chart_type;
-      const src = `data:image/png;base64,${item.base64_image}`;
-
-      col.innerHTML = `
-        <div class="card h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-              <h3 class="h6 mb-2">${title}</h3>
-              <span class="badge text-bg-light">${item.width}×${item.height}</span>
-            </div>
-            <img class="img-fluid border rounded" alt="${title}" src="${src}" />
+function renderTopRestaurants(data, grid) {
+  const items = data.top_restaurants || [];
+  for (const item of items) {
+    const col = document.createElement('div');
+    col.className = 'col-12 col-lg-6';
+    const rating = item.rating == null ? 'N/A' : item.rating.toFixed(2);
+    const cuisines = Array.isArray(item.cuisines) ? item.cuisines.join(', ') : '';
+    col.innerHTML = `
+      <div class="card drilldown-item-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <h6 class="mb-1">#${item.rank} ${item.name}</h6>
+            <span class="badge text-bg-dark">${item.votes.toLocaleString()} votes</span>
+          </div>
+          <div class="text-muted small mt-1">
+            <div>${item.location} &middot; ${item.restaurant_type}</div>
+            <div>Rating: ${rating}</div>
+            <div>Cuisines: ${cuisines}</div>
           </div>
         </div>
-      `;
-
-      gridEl.appendChild(col);
-    }
-  } catch (err) {
-    errorEl.textContent = err instanceof Error ? err.message : String(err);
-    errorEl.classList.remove('d-none');
-  } finally {
-    loadingEl.classList.add('d-none');
+      </div>`;
+    grid.appendChild(col);
   }
 }
+
+function renderFoodieAreas(data, grid) {
+  const items = data.foodie_areas || [];
+  for (const item of items) {
+    const col = document.createElement('div');
+    col.className = 'col-12 col-lg-6';
+    const rating = item.avg_rating == null ? 'N/A' : item.avg_rating.toFixed(2);
+    const cuisines = Array.isArray(item.top_cuisines) ? item.top_cuisines.join(', ') : '';
+    const types = Array.isArray(item.restaurant_types) ? item.restaurant_types.join(', ') : '';
+    col.innerHTML = `
+      <div class="card drilldown-item-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <h6 class="mb-1">${item.area}</h6>
+            <span class="badge text-bg-secondary">${item.restaurant_count} restaurants</span>
+          </div>
+          <div class="text-muted small mt-1">
+            <div>Avg rating: ${rating}</div>
+            <div>Top cuisines: ${cuisines}</div>
+            <div>Types: ${types}</div>
+          </div>
+        </div>
+      </div>`;
+    grid.appendChild(col);
+  }
+}
+
+function renderRestaurantTypes(data, grid) {
+  const items = data.restaurant_types || [];
+  for (const item of items) {
+    const col = document.createElement('div');
+    col.className = 'col-12 col-sm-6 col-lg-4';
+    const avgRating = item.avg_rating == null ? 'N/A' : item.avg_rating.toFixed(2);
+    const avgCost = item.avg_cost_for_two == null ? 'N/A' : item.avg_cost_for_two;
+    col.innerHTML = `
+      <div class="card drilldown-item-card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <h6 class="mb-1">${item.restaurant_type}</h6>
+            <span class="badge text-bg-primary">${item.percentage.toFixed(1)}%</span>
+          </div>
+          <div class="display-6 fw-semibold">${item.count.toLocaleString()}</div>
+          <div class="text-muted small mt-1">
+            <div>Avg rating: ${avgRating}</div>
+            <div>Avg cost for two: ${avgCost}</div>
+          </div>
+        </div>
+      </div>`;
+    grid.appendChild(col);
+  }
+}
+
+/* ===== Page Initialization ===== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  const refreshBtn = document.getElementById('refresh-btn');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => {
-      void loadRestaurantTypes();
+  // Home page: search form
+  const searchForm = document.getElementById('search-form');
+  if (searchForm) {
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void handleSearch();
     });
   }
-
-  const topRefreshBtn = document.getElementById('top-restaurants-refresh-btn');
-  if (topRefreshBtn) {
-    topRefreshBtn.addEventListener('click', () => {
-      void loadTopRestaurants();
+  const searchBtn = document.getElementById('search-btn');
+  if (searchBtn) {
+    searchBtn.addEventListener('click', () => {
+      void handleSearch();
     });
   }
-
-  const foodieAreasRefreshBtn = document.getElementById('foodie-areas-refresh-btn');
-  if (foodieAreasRefreshBtn) {
-    foodieAreasRefreshBtn.addEventListener('click', () => {
-      void loadFoodieAreas();
-    });
+  const clearBtn = document.getElementById('clear-search-btn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', clearSearch);
   }
 
-  const chartsRefreshBtn = document.getElementById('charts-refresh-btn');
-  if (chartsRefreshBtn) {
-    chartsRefreshBtn.addEventListener('click', () => {
-      void loadCharts();
-    });
+  // Drill-down: Top Restaurants
+  const restaurantsPage = document.getElementById('drilldown-restaurants');
+  if (restaurantsPage) {
+    void loadDrilldownChart('top-restaurants-bar');
+    void loadDrilldownItems('/api/top-restaurants', renderTopRestaurants);
   }
 
-  void loadRestaurantTypes();
-  void loadTopRestaurants();
-  void loadFoodieAreas();
-  void loadCharts();
+  // Drill-down: Top Foodie Areas
+  const foodieAreasPage = document.getElementById('drilldown-foodie-areas');
+  if (foodieAreasPage) {
+    void loadDrilldownChart('foodie-areas-bar');
+    void loadDrilldownItems('/api/foodie-areas', renderFoodieAreas);
+  }
+
+  // Drill-down: Top Restaurant Types
+  const typesPage = document.getElementById('drilldown-restaurant-types');
+  if (typesPage) {
+    void loadDrilldownChart('restaurant-types-pie');
+    void loadDrilldownItems('/api/restaurant-types', renderRestaurantTypes);
+  }
 });

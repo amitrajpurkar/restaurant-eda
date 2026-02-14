@@ -322,6 +322,105 @@ def compute_foodie_areas(restaurants_df: pd.DataFrame, *, limit: int = 10) -> Fo
     return FoodieAreasResult(foodie_areas=items, total_areas=total_areas, processing_time_ms=processing_time_ms)
 
 
+@dataclass(frozen=True, slots=True)
+class SearchResult:
+    results: List[Dict[str, Any]]
+    total_matches: int
+
+
+def search_restaurants(
+    restaurants_df: pd.DataFrame,
+    q: str,
+    mode: Literal["name", "type", "area"],
+    limit: int = 10,
+) -> SearchResult:
+    """Search restaurants by name, type, or area using case-insensitive substring matching."""
+    import re
+
+    if restaurants_df.empty or not q.strip():
+        return SearchResult(results=[], total_matches=0)
+
+    q_escaped = re.escape(q.strip())
+
+    if mode == "name":
+        col = "name"
+        mask = restaurants_df[col].astype(str).str.contains(q_escaped, case=False, na=False, regex=True)
+        matched = restaurants_df[mask]
+        total_matches = int(len(matched))
+        top = matched.head(limit)
+        results: List[Dict[str, Any]] = []
+        for _, row in top.iterrows():
+            rating_val = row.get("rating")
+            rating: Optional[float] = None
+            if rating_val is not None and not (isinstance(rating_val, float) and pd.isna(rating_val)):
+                try:
+                    rating = float(rating_val)
+                except (ValueError, TypeError):
+                    rating = None
+            results.append(
+                {
+                    "name": str(row.get("name", "")),
+                    "location": str(row.get("location", "")),
+                    "restaurant_type": str(row.get("restaurant_type", "")),
+                    "rating": rating,
+                    "votes": int(row.get("votes", 0)),
+                }
+            )
+        return SearchResult(results=results, total_matches=total_matches)
+
+    elif mode == "type":
+        col = "restaurant_type"
+        mask = restaurants_df[col].astype(str).str.contains(q_escaped, case=False, na=False, regex=True)
+        matched = restaurants_df[mask]
+        if matched.empty:
+            return SearchResult(results=[], total_matches=0)
+        grouped = matched.groupby(col, dropna=False)
+        counts = grouped.size().rename("count").reset_index()
+        avg_rating = grouped["rating"].mean(numeric_only=False).rename("avg_rating").reset_index()
+        merged = counts.merge(avg_rating, on=col, how="left")
+        merged = merged.sort_values(by="count", ascending=False)
+        total_matches = int(len(merged))
+        top = merged.head(limit)
+        results = []
+        for _, row in top.iterrows():
+            avg_r = row.get("avg_rating")
+            avg_val: Optional[float] = None if pd.isna(avg_r) else float(avg_r)
+            results.append(
+                {
+                    "restaurant_type": str(row[col]),
+                    "count": int(row["count"]),
+                    "avg_rating": avg_val,
+                }
+            )
+        return SearchResult(results=results, total_matches=total_matches)
+
+    else:  # mode == "area"
+        col = "location"
+        mask = restaurants_df[col].astype(str).str.contains(q_escaped, case=False, na=False, regex=True)
+        matched = restaurants_df[mask]
+        if matched.empty:
+            return SearchResult(results=[], total_matches=0)
+        grouped = matched.groupby(col, dropna=False)
+        counts = grouped.size().rename("restaurant_count").reset_index()
+        avg_rating = grouped["rating"].mean(numeric_only=False).rename("avg_rating").reset_index()
+        merged = counts.merge(avg_rating, on=col, how="left")
+        merged = merged.sort_values(by="restaurant_count", ascending=False)
+        total_matches = int(len(merged))
+        top = merged.head(limit)
+        results = []
+        for _, row in top.iterrows():
+            avg_r = row.get("avg_rating")
+            avg_val_area: Optional[float] = None if pd.isna(avg_r) else float(avg_r)
+            results.append(
+                {
+                    "area": str(row[col]),
+                    "restaurant_count": int(row["restaurant_count"]),
+                    "avg_rating": avg_val_area,
+                }
+            )
+        return SearchResult(results=results, total_matches=total_matches)
+
+
 def get_foodie_areas_cached(restaurants_df: pd.DataFrame, *, limit: int = 10, ttl: int = 300) -> FoodieAreasResult:
     key = f"foodie-areas:{id(restaurants_df)}:{len(restaurants_df)}:{limit}"
     cached = _cache_get(key)

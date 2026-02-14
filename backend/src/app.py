@@ -154,6 +154,18 @@ def create_app() -> Flask:
     def index():
         return render_template("index.html")
 
+    @app.get("/top-restaurants")
+    def drilldown_restaurants():
+        return render_template("drilldown_restaurants.html")
+
+    @app.get("/top-foodie-areas")
+    def drilldown_foodie_areas():
+        return render_template("drilldown_foodie_areas.html")
+
+    @app.get("/top-restaurant-types")
+    def drilldown_restaurant_types():
+        return render_template("drilldown_restaurant_types.html")
+
     return app
 
 

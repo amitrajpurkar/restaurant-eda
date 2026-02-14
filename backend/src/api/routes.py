@@ -16,6 +16,8 @@ from src.api.schemas import (
     HealthResponse,
     RestaurantTypesData,
     RestaurantTypesResponse,
+    SearchData,
+    SearchResponse,
     TopRestaurantsData,
     TopRestaurantsResponse,
     make_error_response,
@@ -25,6 +27,7 @@ from src.services.analytics import (
     get_foodie_areas_cached,
     get_restaurant_type_summary_cached,
     get_top_restaurants_cached,
+    search_restaurants,
 )
 from src.utils.charts import foodie_areas_bar_chart, restaurant_types_pie_chart, top_restaurants_bar_chart
 
@@ -84,6 +87,76 @@ def get_health():
     )
 
     return jsonify(payload.model_dump(mode="json"))
+
+
+@api_bp.get("/search")
+def search():
+    request_id = getattr(g, "request_id", str(uuid.uuid4()))
+    start = perf_counter()
+
+    restaurants_df = current_app.config.get("RESTAURANTS_DF")
+    if restaurants_df is None:
+        return jsonify(
+            make_error_response(
+                request_id=request_id,
+                processing_time_ms=int((perf_counter() - start) * 1000),
+                error="Restaurant data not loaded",
+            )
+        ), 500
+
+    q = request.args.get("q")
+    mode = request.args.get("mode")
+
+    if not q or not q.strip():
+        return jsonify(
+            make_error_response(
+                request_id=request_id,
+                processing_time_ms=int((perf_counter() - start) * 1000),
+                error="Missing or empty required parameter: q",
+            )
+        ), 400
+
+    if not mode or mode not in {"name", "type", "area"}:
+        return jsonify(
+            make_error_response(
+                request_id=request_id,
+                processing_time_ms=int((perf_counter() - start) * 1000),
+                error="Missing or invalid parameter: mode must be one of: name, type, area",
+            )
+        ), 400
+
+    if len(q) > 200:
+        return jsonify(
+            make_error_response(
+                request_id=request_id,
+                processing_time_ms=int((perf_counter() - start) * 1000),
+                error="Invalid parameter: q must be at most 200 characters",
+            )
+        ), 400
+
+    try:
+        result = search_restaurants(restaurants_df, q=q, mode=mode, limit=10)
+
+        payload = SearchResponse(
+            data=SearchData(
+                query=q.strip(),
+                mode=mode,
+                results=result.results,
+                total_matches=result.total_matches,
+            ),
+            metadata=make_response_metadata(
+                request_id=request_id, processing_time_ms=int((perf_counter() - start) * 1000)
+            ),
+        )
+        return jsonify(payload.model_dump(mode="json"))
+    except Exception as exc:
+        return jsonify(
+            make_error_response(
+                request_id=request_id,
+                processing_time_ms=int((perf_counter() - start) * 1000),
+                error=str(exc),
+            )
+        ), 500
 
 
 @api_bp.get("/restaurant-types")

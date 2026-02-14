@@ -104,6 +104,39 @@ class HealthResponse(BaseModel):
     metadata: ResponseMetadata
 
 
+class SearchResultName(BaseModel):
+    name: str
+    location: str
+    restaurant_type: str
+    rating: Optional[float] = Field(default=None, ge=0, le=5)
+    votes: int = Field(ge=0)
+
+
+class SearchResultType(BaseModel):
+    restaurant_type: str
+    count: int = Field(ge=0)
+    avg_rating: Optional[float] = Field(default=None, ge=0, le=5)
+
+
+class SearchResultArea(BaseModel):
+    area: str
+    restaurant_count: int = Field(ge=0)
+    avg_rating: Optional[float] = Field(default=None, ge=0, le=5)
+
+
+class SearchData(BaseModel):
+    query: str
+    mode: str
+    results: List[Any]
+    total_matches: int = Field(ge=0)
+
+
+class SearchResponse(BaseModel):
+    success: bool = True
+    data: SearchData
+    metadata: ResponseMetadata
+
+
 def make_response_metadata(*, request_id: str, processing_time_ms: int) -> ResponseMetadata:
     return ResponseMetadata(timestamp=datetime.utcnow(), processing_time_ms=processing_time_ms, request_id=request_id)
 

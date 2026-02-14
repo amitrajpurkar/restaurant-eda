@@ -58,6 +58,25 @@ def test_contract_foodie_areas(client, app, sample_restaurants_df):
     _assert_metadata(body)
 
 
+def test_contract_search(client, app, sample_restaurants_df):
+    df = sample_restaurants_df.copy()
+    df["cuisines"] = ["A", "A", "B"]
+    app.config["RESTAURANTS_DF"] = df
+
+    resp = client.get("/api/search?q=a&mode=name")
+    assert resp.status_code == 200
+    body = resp.get_json()
+    assert body["success"] is True
+    assert "data" in body
+    assert "query" in body["data"]
+    assert "mode" in body["data"]
+    assert "results" in body["data"]
+    assert "total_matches" in body["data"]
+    assert isinstance(body["data"]["results"], list)
+    assert isinstance(body["data"]["total_matches"], int)
+    _assert_metadata(body)
+
+
 def test_contract_charts(client, app, sample_restaurants_df):
     app.config["RESTAURANTS_DF"] = sample_restaurants_df
 

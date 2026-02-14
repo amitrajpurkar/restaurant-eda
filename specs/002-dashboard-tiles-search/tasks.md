@@ -19,8 +19,8 @@
 
 **Purpose**: Prepare project structure for the new feature
 
-- [ ] T001 Add Pydantic search schemas (SearchRequest, SearchData, SearchResponse) to backend/src/api/schemas.py
-- [ ] T002 [P] Add search service function stubs to backend/src/services/analytics.py
+- [X] T001 Add Pydantic search schemas (SearchRequest, SearchData, SearchResponse) to backend/src/api/schemas.py
+- [X] T002 [P] Add search service function stubs to backend/src/services/analytics.py
 
 **Checkpoint**: Schema and service stubs in place — ready for foundational implementation
 
@@ -32,11 +32,11 @@
 
 **CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 [P] Write unit tests for search_restaurants in backend/tests/unit/test_search.py — cover all 3 modes, empty results, special characters, limit cap (TDD: tests FIRST, must FAIL)
-- [ ] T004 Implement search_restaurants(df, q, mode, limit) in backend/src/services/analytics.py — case-insensitive substring matching, returns results + total_matches (make T003 tests pass)
-- [ ] T005 [P] Write integration tests for /api/search in backend/tests/integration/test_api_search.py — success cases, validation errors, empty results (TDD: tests FIRST, must FAIL)
-- [ ] T006 [P] Add search contract test to backend/tests/contract/test_api_contracts.py — validate response shape matches contracts/api.yml (TDD: tests FIRST, must FAIL)
-- [ ] T007 Add GET /api/search endpoint to backend/src/api/routes.py — validates q (1–200 chars) and mode (name/type/area), returns SearchResponse (make T005/T006 tests pass)
+- [X] T003 [P] Write unit tests for search_restaurants in backend/tests/unit/test_search.py — cover all 3 modes, empty results, special characters, limit cap (TDD: tests FIRST, must FAIL)
+- [X] T004 Implement search_restaurants(df, q, mode, limit) in backend/src/services/analytics.py — case-insensitive substring matching, returns results + total_matches (make T003 tests pass)
+- [X] T005 [P] Write integration tests for /api/search in backend/tests/integration/test_api_search.py — success cases, validation errors, empty results (TDD: tests FIRST, must FAIL)
+- [X] T006 [P] Add search contract test to backend/tests/contract/test_api_contracts.py — validate response shape matches contracts/api.yml (TDD: tests FIRST, must FAIL)
+- [X] T007 Add GET /api/search endpoint to backend/src/api/routes.py — validates q (1–200 chars) and mode (name/type/area), returns SearchResponse (make T005/T006 tests pass)
 
 **Checkpoint**: /api/search endpoint works end-to-end with tests passing — user story implementation can begin
 
@@ -52,15 +52,15 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T008 [P] [US1] Write integration test for home page in backend/tests/integration/test_pages.py — GET / returns 200, contains "Belangaru Restaurant Dashboard", contains search form, contains 3 tile links
-- [ ] T009 [P] [US1] Write integration test for search UI flow in backend/tests/integration/test_pages.py — search form submits to /api/search, results area renders
+- [X] T008 [P] [US1] Write integration test for home page in backend/tests/integration/test_pages.py — GET / returns 200, contains "Belangaru Restaurant Dashboard", contains search form, contains 3 tile links
+- [X] T009 [P] [US1] Write integration test for search UI flow in backend/tests/integration/test_pages.py — search form submits to /api/search, results area renders
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Rewrite frontend/templates/index.html — title "Belangaru Restaurant Dashboard", search panel (text input + mode dropdown + Search button), results area, 3 category tiles linking to /top-restaurants, /top-foodie-areas, /top-restaurant-types; include error state when data is not loaded (edge case: no data available)
-- [ ] T011 [US1] Rewrite frontend/static/js/main.js — search form submit handler (calls /api/search, renders results between search panel and tiles; shows "no results" on empty; clears results on empty input)
-- [ ] T012 [P] [US1] Update frontend/static/css/main.css — add styles for search panel, results area, category tiles (large clickable cards)
-- [ ] T013 [US1] Remove old sequential section includes from frontend/templates/index.html (restaurant_types.html, top_restaurants.html, foodie_areas.html, charts.html)
+- [X] T010 [US1] Rewrite frontend/templates/index.html — title "Belangaru Restaurant Dashboard", search panel (text input + mode dropdown + Search button), results area, 3 category tiles linking to /top-restaurants, /top-foodie-areas, /top-restaurant-types; include error state when data is not loaded (edge case: no data available)
+- [X] T011 [US1] Rewrite frontend/static/js/main.js — search form submit handler (calls /api/search, renders results between search panel and tiles; shows "no results" on empty; clears results on empty input)
+- [X] T012 [P] [US1] Update frontend/static/css/main.css — add styles for search panel, results area, category tiles (large clickable cards)
+- [X] T013 [US1] Remove old sequential section includes from frontend/templates/index.html (restaurant_types.html, top_restaurants.html, foodie_areas.html, charts.html)
 
 **Checkpoint**: Home page shows search panel + 3 tiles; search returns results; old sequential layout removed
 
@@ -76,18 +76,18 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T014 [P] [US2] Write integration test for GET /top-restaurants page in backend/tests/integration/test_pages.py — returns 200, contains chart container, contains items grid
-- [ ] T015 [P] [US2] Write integration test for GET /top-foodie-areas page in backend/tests/integration/test_pages.py — returns 200, contains chart container, contains items grid
-- [ ] T016 [P] [US2] Write integration test for GET /top-restaurant-types page in backend/tests/integration/test_pages.py — returns 200, contains chart container, contains items grid
+- [X] T014 [P] [US2] Write integration test for GET /top-restaurants page in backend/tests/integration/test_pages.py — returns 200, contains chart container, contains items grid
+- [X] T015 [P] [US2] Write integration test for GET /top-foodie-areas page in backend/tests/integration/test_pages.py — returns 200, contains chart container, contains items grid
+- [X] T016 [P] [US2] Write integration test for GET /top-restaurant-types page in backend/tests/integration/test_pages.py — returns 200, contains chart container, contains items grid
 
 ### Implementation for User Story 2
 
-- [ ] T017 [P] [US2] Create frontend/templates/drilldown_restaurants.html — extends base.html, chart image area + top-10 restaurant tiles; include error state when data is not loaded
-- [ ] T018 [P] [US2] Create frontend/templates/drilldown_foodie_areas.html — extends base.html, chart image area + top-10 foodie area tiles; include error state when data is not loaded
-- [ ] T019 [P] [US2] Create frontend/templates/drilldown_restaurant_types.html — extends base.html, chart image area + top-10 restaurant type tiles; include error state when data is not loaded
-- [ ] T020 [US2] Add Flask routes for /top-restaurants, /top-foodie-areas, /top-restaurant-types in backend/src/app.py — each renders its drill-down template
-- [ ] T021 [US2] Add JavaScript loaders for drill-down pages in frontend/static/js/main.js — each page calls its /api/* + /api/charts/* endpoint and renders chart image + item tiles; show error message if chart API fails while still allowing navigation back to dashboard (edge case: chart load failure)
-- [ ] T022 [P] [US2] Update frontend/static/css/main.css — add drill-down page styles (chart container, item tiles)
+- [X] T017 [P] [US2] Create frontend/templates/drilldown_restaurants.html — extends base.html, chart image area + top-10 restaurant tiles; include error state when data is not loaded
+- [X] T018 [P] [US2] Create frontend/templates/drilldown_foodie_areas.html — extends base.html, chart image area + top-10 foodie area tiles; include error state when data is not loaded
+- [X] T019 [P] [US2] Create frontend/templates/drilldown_restaurant_types.html — extends base.html, chart image area + top-10 restaurant type tiles; include error state when data is not loaded
+- [X] T020 [US2] Add Flask routes for /top-restaurants, /top-foodie-areas, /top-restaurant-types in backend/src/app.py — each renders its drill-down template
+- [X] T021 [US2] Add JavaScript loaders for drill-down pages in frontend/static/js/main.js — each page calls its /api/* + /api/charts/* endpoint and renders chart image + item tiles; show error message if chart API fails while still allowing navigation back to dashboard (edge case: chart load failure)
+- [X] T022 [P] [US2] Update frontend/static/css/main.css — add drill-down page styles (chart container, item tiles)
 
 **Checkpoint**: All 3 drill-down pages render chart + tiles from live data; accessible via direct URL
 
@@ -103,12 +103,12 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T023 [US3] Write integration test in backend/tests/integration/test_pages.py — all drill-down pages contain a link to / with text "Belangaru Restaurant Dashboard"
+- [X] T023 [US3] Write integration test in backend/tests/integration/test_pages.py — all drill-down pages contain a link to / with text "Belangaru Restaurant Dashboard"
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Update frontend/templates/base.html — change navbar brand text to "Belangaru Restaurant Dashboard" and ensure href points to /
-- [ ] T025 [US3] Verify all drill-down templates extend base.html and inherit the navbar (no additional changes needed if T024 is correct)
+- [X] T024 [US3] Update frontend/templates/base.html — change navbar brand text to "Belangaru Restaurant Dashboard" and ensure href points to /
+- [X] T025 [US3] Verify all drill-down templates extend base.html and inherit the navbar (no additional changes needed if T024 is correct)
 
 **Checkpoint**: Navbar shows "Belangaru Restaurant Dashboard" on all pages; clicking it returns to home
 
@@ -118,11 +118,11 @@
 
 **Purpose**: Final quality pass across all stories
 
-- [ ] T026 [P] Run full test suite with coverage gate: uv run python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80
-- [ ] T027 [P] Update README.md with new page URLs and search API examples
-- [ ] T028 Validate quickstart.md verification checklist end-to-end (all 5 items)
-- [ ] T029 [P] Clean up unused old template files if no longer referenced (frontend/templates/restaurant_types.html, top_restaurants.html, foodie_areas.html, charts.html)
-- [ ] T030 Input validation hardening — ensure search query with special characters, very long strings, and whitespace-only input are handled gracefully
+- [X] T026 [P] Run full test suite with coverage gate: uv run python -m pytest --cov=src --cov-report=term-missing --cov-fail-under=80
+- [X] T027 [P] Update README.md with new page URLs and search API examples
+- [X] T028 Validate quickstart.md verification checklist end-to-end (all 5 items)
+- [X] T029 [P] Clean up unused old template files if no longer referenced (frontend/templates/restaurant_types.html, top_restaurants.html, foodie_areas.html, charts.html)
+- [X] T030 Input validation hardening — ensure search query with special characters, very long strings, and whitespace-only input are handled gracefully
 
 ---
 

@@ -1,15 +1,86 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="h3 mb-0">Dashboard</h1>
+  <div class="mb-4">
+    <h1 class="h3 mb-3">Belangaru Restaurant Dashboard</h1>
   </div>
 
-  {% include 'restaurant_types.html' %}
+  <!-- Search Panel -->
+  <div class="card mb-4 shadow-sm" id="search-panel">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Search</h5>
+      <form id="search-form" onsubmit="return false;">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-5">
+            <label for="search-query" class="form-label">Query</label>
+            <input type="text" class="form-control" id="search-query" name="q" placeholder="Search restaurants, types, or areas..." maxlength="200" />
+          </div>
+          <div class="col-md-4">
+            <label for="search-mode" class="form-label">Search by</label>
+            <select class="form-select" id="search-mode" name="mode">
+              <option value="name">Restaurant Name</option>
+              <option value="type">Restaurant Type</option>
+              <option value="area">Foodie Area</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100" id="search-btn">Search</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 
-  {% include 'top_restaurants.html' %}
+  <!-- Search Results Area -->
+  <div id="search-results" class="mb-4" style="display:none;">
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <h5 class="mb-0" id="search-results-title">Search Results</h5>
+      <button class="btn btn-sm btn-outline-secondary" id="clear-search-btn">Clear</button>
+    </div>
+    <div id="search-results-grid" class="row g-3"></div>
+    <div id="search-no-results" class="alert alert-info" style="display:none;">No results found.</div>
+    <div id="search-error" class="alert alert-danger" style="display:none;"></div>
+  </div>
 
-  {% include 'foodie_areas.html' %}
+  <!-- Error state when data is not loaded -->
+  <div id="data-error" class="alert alert-warning" style="display:none;">
+    Restaurant data is not available. Please ensure the dataset is loaded.
+  </div>
 
-  {% include 'charts.html' %}
+  <!-- Category Tiles -->
+  <div class="row g-4" id="category-tiles">
+    <div class="col-md-4">
+      <a href="/top-restaurants" class="text-decoration-none">
+        <div class="card dashboard-tile shadow-sm h-100">
+          <div class="card-body text-center">
+            <div class="tile-icon mb-3">🏆</div>
+            <h4 class="card-title">Top 10 Restaurants</h4>
+            <p class="card-text text-muted">Discover the highest-rated and most popular restaurants</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/top-foodie-areas" class="text-decoration-none">
+        <div class="card dashboard-tile shadow-sm h-100">
+          <div class="card-body text-center">
+            <div class="tile-icon mb-3">📍</div>
+            <h4 class="card-title">Top 10 Foodie Areas</h4>
+            <p class="card-text text-muted">Explore the most vibrant food neighborhoods</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-4">
+      <a href="/top-restaurant-types" class="text-decoration-none">
+        <div class="card dashboard-tile shadow-sm h-100">
+          <div class="card-body text-center">
+            <div class="tile-icon mb-3">🍽️</div>
+            <h4 class="card-title">Top 10 Restaurant Types</h4>
+            <p class="card-text text-muted">See which dining categories dominate the city</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
 {% endblock %}

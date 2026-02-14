@@ -1,17 +1,44 @@
+/* Dashboard tiles */
+.dashboard-tile {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid #dee2e6;
+}
+.dashboard-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+}
+.tile-icon {
+  font-size: 2.5rem;
+}
+
+/* Search panel */
+#search-panel {
+  border-left: 4px solid #0d6efd;
+}
+
+/* Search results */
+.search-result-card {
+  border-left: 3px solid #198754;
+}
+
+/* Drill-down item cards */
+.drilldown-item-card {
+  border-left: 3px solid #6c757d;
+}
+
+/* Chart container */
+#chart-container img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Legacy card styles (kept for backward compat) */
 .type-card {
   cursor: default;
 }
-
-.type-card .meta {
-  font-size: 0.875rem;
-  color: #6c757d;
-}
-
-.top-restaurant-card .meta {
-  font-size: 0.875rem;
-  color: #6c757d;
-}
-
+.type-card .meta,
+.top-restaurant-card .meta,
 .foodie-area-card .meta {
   font-size: 0.875rem;
   color: #6c757d;

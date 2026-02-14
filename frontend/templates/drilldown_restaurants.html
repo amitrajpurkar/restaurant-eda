@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div id="drilldown-restaurants">
+    <h1 class="h3 mb-4">Top 10 Restaurants</h1>
+
+    <!-- Chart -->
+    <div class="card mb-4 shadow-sm" id="chart-container">
+      <div class="card-body">
+        <div id="chart-loading" class="text-center py-3">
+          <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading chart...</span></div>
+        </div>
+        <div id="chart-error" class="alert alert-warning" style="display:none;">Chart failed to load. You can still browse the items below.</div>
+        <img id="chart-image" class="img-fluid" style="display:none;" alt="Top 10 Restaurants Chart" />
+      </div>
+    </div>
+
+    <!-- Data not loaded error state -->
+    <div id="items-error" class="alert alert-danger" style="display:none;"></div>
+
+    <!-- Items -->
+    <h5 class="mb-3">Top 10</h5>
+    <div id="items-loading" class="text-center py-3" style="display:none;">
+      <div class="spinner-border text-secondary" role="status"><span class="visually-hidden">Loading...</span></div>
+    </div>
+    <div id="items-grid" class="row g-3"></div>
+  </div>
+{% endblock %}
